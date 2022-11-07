@@ -1,15 +1,11 @@
 'use strict';
 require('dotenv').config();
-const express = require('express');
-const app = express();
-const http = require('http');
-const cors = require('cors');
-const { Server } = require('socket.io');
-const server = http.createServer(app);
 
+const {PORT, Server, app, cors, http} =require('./config');
+const queue = require('./message-queue');
+const server = http.createServer(app);
 const users = {};
 
-const PORT = process.env.PORT ;
 app.use(cors({
     origin: 'http://localhost:3000'
 }));
@@ -27,6 +23,7 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('new_user_connected', { user : users[socket.id]});
     socket.on('message', (payload) => {
         socket.broadcast.emit('received',{user: users[socket.id], message : payload.message});
+        queue.push(payload.message);
     });
     socket.on('disconnect',(payload) => {
         console.log(payload);

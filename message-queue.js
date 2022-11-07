@@ -1,11 +1,7 @@
 'use strict';
 
 
-const queue = {
-    msgs:{
-
-    }
-};
+const queue = [];
 
 
 
